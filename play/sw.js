@@ -1,5 +1,5 @@
 // Кладём приложение в кэш при установке — дальше оно работает без интернета.
-const CACHE = 'lsg-v1';
+const CACHE = 'lsg-53e12abd';
 const FILES = [
   '.', 'index.html', 'styles.css', 'fonts.css', 'questions.js', 'app.js',
   'manifest.json', 'icon-192.png', 'icon-512.png',
