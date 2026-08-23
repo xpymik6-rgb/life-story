@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#141726">
+<title>Истории твоей жизни</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Истории">
+<link rel="stylesheet" href="fonts.css">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- Шапка: название, счётчик пройденного, переключатель языка -->
+<header class="bar">
+  <div class="bar__title">
+    <span class="bar__name" data-i18n="title">Истории твоей жизни</span>
+    <span class="bar__count"><span id="count">0</span> <span data-i18n="of">из</span> 200</span>
+  </div>
+  <div class="bar__tools">
+    <div class="lang" id="lang" role="group" aria-label="Язык / Language / Idioma">
+      <button class="lang__opt is-on" data-lang="ru" type="button">РУ</button>
+      <button class="lang__opt" data-lang="en" type="button">EN</button>
+      <button class="lang__opt" data-lang="es" type="button">ES</button>
+      <button class="lang__opt" data-lang="pt" type="button">PT</button>
+    </div>
+    <button class="icon-btn" id="reset" type="button" data-i18n-title="reset" title="Начать заново" aria-label="Начать заново">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v5h-5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+</header>
+
+<main class="stage" id="stage">
+
+  <!-- Кубики -->
+  <div class="dice" id="dice">
+    <button class="die die--cat" id="die-cat" type="button" aria-live="polite">
+      <svg class="die__shape" viewBox="0 0 100 100" aria-hidden="true">
+        <path class="die__face" d="M50 3 L96 38 L74 97 L26 97 L4 38 Z"/>
+        <path class="die__edge" d="M50 3 L50 61 M4 38 L50 61 L96 38 M26 97 L50 61 L74 97"/>
+      </svg>
+      <span class="die__num" id="num-cat">10</span>
+      <span class="die__label" data-i18n="dieCat">категория</span>
+    </button>
+
+    <button class="die die--q" id="die-q" type="button" aria-live="polite">
+      <svg class="die__shape" viewBox="0 0 100 100" aria-hidden="true">
+        <path class="die__face" d="M50 2 L91 26 L91 74 L50 98 L9 74 L9 26 Z"/>
+        <path class="die__edge" d="M50 24 L74 70 L26 70 Z M50 2 L50 24 M91 26 L74 70 M91 74 L74 70 M50 98 L50 70 M9 74 L26 70 M9 26 L26 70"/>
+      </svg>
+      <span class="die__num" id="num-q">20</span>
+      <span class="die__label" data-i18n="dieQ">вопрос</span>
+    </button>
+  </div>
+
+  <!-- Подсказка / ручной ввод чисел -->
+  <div class="prompt" id="prompt">
+    <p class="prompt__hint" data-i18n="hint">Нажми, чтобы бросить кубики</p>
+    <form class="manual" id="manual" hidden>
+      <label class="manual__field">
+        <span data-i18n="dieCat">категория</span>
+        <input type="number" id="in-cat" min="1" max="10" inputmode="numeric" placeholder="1–10">
+      </label>
+      <label class="manual__field">
+        <span data-i18n="dieQ">вопрос</span>
+        <input type="number" id="in-q" min="1" max="20" inputmode="numeric" placeholder="1–20">
+      </label>
+      <button class="btn btn--ghost" type="submit" data-i18n="show">Показать</button>
+    </form>
+  </div>
+
+  <!-- Карта с вопросом -->
+  <article class="card" id="card" hidden>
+    <div class="card__head">
+      <span class="card__cat" id="card-cat"></span>
+      <span class="card__nums" id="card-nums"></span>
+    </div>
+    <p class="card__q" id="card-q"></p>
+    <p class="card__seen" id="card-seen" hidden data-i18n="seen">этот вопрос уже выпадал</p>
+  </article>
+
+  <!-- Экран после последнего вопроса -->
+  <div class="done" id="done" hidden>
+    <p class="done__big" data-i18n="doneBig">Все 200 вопросов рассказаны</p>
+    <p class="done__sub" data-i18n="doneSub">Колода пуста. Можно начать круг заново.</p>
+    <button class="btn" type="button" id="done-reset" data-i18n="reset">Начать заново</button>
+  </div>
+</main>
+
+<!-- Нижняя панель действий -->
+<footer class="actions">
+  <button class="btn btn--quiet" id="skip" type="button" data-i18n="skip" hidden>Пропустить</button>
+  <button class="btn btn--main" id="roll" type="button" data-i18n="roll">Бросить</button>
+  <button class="btn btn--quiet" id="mode" type="button" data-i18n="modeManual">Свои числа</button>
+</footer>
+
+<script src="questions.js"></script>
+<script src="app.js"></script>
+<script>if ("serviceWorker" in navigator) { window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); }); }</script>
+</body>
+</html>

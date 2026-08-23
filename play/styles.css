@@ -1,0 +1,431 @@
+/* ================= Палитра и типографика =================
+   Тёмная тема — основная: игра для вечера за столом.
+   Карта с вопросом всегда светлая — это лист бумаги в темноте. */
+
+:root {
+  --bg:        #141726;   /* ночной индиго */
+  --bg-2:      #1D2136;   /* поверхность */
+  --line:      #2C3149;
+  --text:      #EDE8DC;
+  --muted:     #8E93AB;
+  --brass:     #D2A24C;   /* латунь — акцент */
+  --brass-dim: #8E6E33;
+  --paper:     #F3EDE1;   /* бумага карты */
+  --ink:       #20232F;   /* текст на карте */
+  --ink-soft:  #6A6E7E;
+
+  --shadow: 0 24px 60px rgba(0,0,0,.45);
+
+  --f-display: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --f-ui: "Golos Text", -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  --pad: clamp(16px, 5vw, 28px);
+  --dur: .55s;
+}
+
+/* Светлая тема: тот же мир при дневном свете — холодный камень вместо ночи */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg:        #D7D8E2;
+    --bg-2:      #EEEEF3;
+    --line:      #BFC0CE;
+    --text:      #22243A;
+    --muted:     #5C5F76;
+    --brass:     #8A6725;
+    --brass-dim: #A98D50;
+    --shadow: 0 22px 48px rgba(30,32,52,.22);
+  }
+}
+:root[data-theme="light"] {
+  --bg:        #D7D8E2;
+  --bg-2:      #EEEEF3;
+  --line:      #BFC0CE;
+  --text:      #22243A;
+  --muted:     #5C5F76;
+  --brass:     #8A6725;
+  --brass-dim: #A98D50;
+  --shadow: 0 22px 48px rgba(30,32,52,.22);
+}
+
+/* Явно выбранная тёмная тема — перекрывает светлую системную */
+:root[data-theme="dark"] {
+  --bg:        #141726;
+  --bg-2:      #1D2136;
+  --line:      #2C3149;
+  --text:      #EDE8DC;
+  --muted:     #8E93AB;
+  --brass:     #D2A24C;
+  --brass-dim: #8E6E33;
+  --shadow: 0 24px 60px rgba(0,0,0,.45);
+}
+
+* { box-sizing: border-box; }
+
+/* Скрытое должно быть скрыто, даже если у элемента задан display */
+[hidden] { display: none !important; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--f-ui);
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior: none;
+  -webkit-tap-highlight-color: transparent;
+
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  padding:
+    calc(env(safe-area-inset-top) + 10px)
+    calc(env(safe-area-inset-right) + var(--pad))
+    calc(env(safe-area-inset-bottom) + 14px)
+    calc(env(safe-area-inset-left) + var(--pad));
+}
+
+/* Мягкое свечение сверху — будто над столом висит лампа */
+body::before {
+  content: "";
+  position: fixed;
+  inset: -20% -20% auto -20%;
+  height: 70vh;
+  background: radial-gradient(60% 60% at 50% 0%, color-mix(in oklab, var(--brass) 16%, transparent), transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+body > * { position: relative; z-index: 1; }
+
+/* ===================== Шапка ===================== */
+
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.bar__title { display: grid; gap: 2px; min-width: 0; }
+
+.bar__name {
+  font-size: 11.5px;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--brass);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bar__count {
+  font-size: 12px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.bar__tools { display: flex; align-items: center; gap: 8px; }
+
+.lang {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+}
+
+.lang__opt {
+  padding: 4px 8px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 11px;
+  letter-spacing: .06em;
+  cursor: pointer;
+  transition: color .2s, background .2s;
+}
+.lang__opt.is-on {
+  color: var(--bg);
+  background: var(--brass);
+}
+.lang__opt:not(.is-on):hover { color: var(--text); }
+
+.icon-btn {
+  display: grid;
+  place-items: center;
+  width: 34px; height: 34px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+.icon-btn svg { width: 17px; height: 17px; }
+
+.icon-btn:hover { border-color: var(--brass-dim); color: var(--text); }
+
+:where(button, input):focus-visible {
+  outline: 2px solid var(--brass);
+  outline-offset: 3px;
+}
+
+/* ===================== Сцена ===================== */
+
+.stage {
+  display: grid;
+  grid-template-rows: auto auto auto;
+  align-content: center;
+  justify-items: center;
+  gap: clamp(14px, 3.5vh, 26px);
+  min-height: 0;
+}
+
+/* ===================== Кубики ===================== */
+
+.dice {
+  display: flex;
+  gap: clamp(18px, 7vw, 40px);
+  transition: transform var(--dur) cubic-bezier(.2,.8,.25,1);
+}
+
+.die {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  color: inherit;
+  font-family: inherit;
+}
+
+.die__shape {
+  width: clamp(96px, 30vw, 132px);
+  height: auto;
+  display: block;
+  filter: drop-shadow(0 10px 22px rgba(0,0,0,.35));
+}
+
+.die__face {
+  fill: var(--bg-2);
+  stroke: var(--brass-dim);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+}
+.die__edge {
+  fill: none;
+  stroke: var(--brass-dim);
+  stroke-width: 1;
+  opacity: .5;
+  stroke-linejoin: round;
+}
+.die--q .die__face { fill: color-mix(in oklab, var(--bg-2) 82%, var(--brass) 6%); }
+
+.die__num {
+  position: absolute;
+  top: 42%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: clamp(30px, 9vw, 42px);
+  font-weight: 500;
+  color: var(--brass);
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+.die--q .die__num { top: 47%; }
+
+.die__label {
+  font-size: 11px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--muted);
+  transition: opacity .3s;
+}
+
+/* Бросок: кубик подрагивает */
+@keyframes shake {
+  0%   { transform: translateY(0) rotate(0deg); }
+  25%  { transform: translateY(-10px) rotate(-7deg); }
+  50%  { transform: translateY(2px) rotate(6deg); }
+  75%  { transform: translateY(-6px) rotate(-3deg); }
+  100% { transform: translateY(0) rotate(0deg); }
+}
+.is-rolling .die__shape { animation: shake .34s ease-in-out infinite; }
+.is-rolling .die--q .die__shape { animation-delay: .07s; }
+
+/* Когда карта открыта — кубики отходят на второй план */
+.has-card .dice { transform: scale(.62) translateY(-14px); }
+.has-card .die__label { opacity: 0; }
+.has-card .prompt { opacity: 0; pointer-events: none; height: 0; }
+
+/* ===================== Подсказка и ручной ввод ===================== */
+
+.prompt { text-align: center; transition: opacity .3s; }
+
+.prompt__hint {
+  margin: 0;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.manual {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.manual__field {
+  display: grid;
+  gap: 5px;
+  font-size: 11px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.manual__field input {
+  width: 84px;
+  padding: 9px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg-2);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 18px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ===================== Карта с вопросом ===================== */
+
+.card {
+  width: min(100%, 30rem);
+  background: var(--paper);
+  color: var(--ink);
+  border-radius: 14px;
+  padding: clamp(20px, 5.5vw, 30px);
+  box-shadow: var(--shadow);
+  display: grid;
+  gap: 14px;
+  align-content: start;
+  animation: deal .45s cubic-bezier(.2,.8,.25,1) both;
+}
+
+@keyframes deal {
+  from { opacity: 0; transform: translateY(26px) rotate(-1.2deg); }
+  to   { opacity: 1; transform: none; }
+}
+
+.card__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid color-mix(in oklab, var(--ink) 14%, transparent);
+}
+
+.card__cat {
+  font-size: 11px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  line-height: 1.4;
+}
+
+.card__nums {
+  font-size: 12px;
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.card__q {
+  margin: 0;
+  font-family: var(--f-display);
+  font-weight: 500;
+  font-size: clamp(23px, 6.4vw, 31px);
+  line-height: 1.28;
+  text-wrap: balance;
+}
+
+.card__seen {
+  margin: 0;
+  font-size: 12px;
+  color: var(--ink-soft);
+  font-style: italic;
+}
+
+/* ===================== Финальный экран ===================== */
+
+.done {
+  display: grid;
+  gap: 14px;
+  justify-items: center;
+  text-align: center;
+  padding-top: 6vh;
+}
+.done__big {
+  margin: 0;
+  font-family: var(--f-display);
+  font-size: clamp(26px, 7vw, 34px);
+  color: var(--brass);
+}
+.done__sub { margin: 0; color: var(--muted); font-size: 14px; }
+
+/* ===================== Кнопки ===================== */
+
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding-top: 14px;
+}
+
+.btn {
+  padding: 13px 22px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  transition: border-color .2s, background .2s, color .2s;
+}
+
+.btn--main {
+  white-space: nowrap;
+  border-color: var(--brass);
+  color: var(--bg);
+  background: var(--brass);
+  padding-inline: 34px;
+  font-size: 15px;
+}
+.btn--main:hover { background: color-mix(in oklab, var(--brass) 88%, white); }
+
+.btn--quiet { color: var(--muted); font-size: 13px; padding-inline: 15px; white-space: nowrap; }
+.btn--quiet:hover { color: var(--text); border-color: var(--brass-dim); }
+
+.btn--ghost { padding: 9px 18px; font-size: 13px; }
+
+/* ===================== Уважение к настройкам ===================== */
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
+
+/* Низкие экраны: ужимаем кубики, чтобы карта помещалась целиком */
+@media (max-height: 660px) {
+  .die__shape { width: clamp(78px, 22vw, 104px); }
+  .die__num { font-size: 28px; }
+}

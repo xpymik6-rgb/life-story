@@ -1,0 +1,15 @@
+{
+  "name": "Истории твоей жизни",
+  "short_name": "Истории",
+  "description": "Игра-разговор для компании: 10 категорий, 200 вопросов.",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#141726",
+  "theme_color": "#141726",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}
