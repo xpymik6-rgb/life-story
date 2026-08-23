@@ -429,3 +429,41 @@ body > * { position: relative; z-index: 1; }
   .die__shape { width: clamp(78px, 22vw, 104px); }
   .die__num { font-size: 28px; }
 }
+
+/* ===================== Подсказка про иконку на айфоне ===================== */
+
+/* Пока подсказка видна, освобождаем под неё место — она не должна закрывать кнопки */
+body.addhome-on { padding-bottom: calc(env(safe-area-inset-bottom) + 96px); }
+
+.addhome {
+  position: fixed;
+  left: 12px;
+  right: 12px;
+  bottom: calc(env(safe-area-inset-bottom) + 12px);
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--brass-dim);
+  border-radius: 14px;
+  background: var(--bg-2);
+  box-shadow: var(--shadow);
+}
+
+.addhome__text { margin: 0; font-size: 13px; line-height: 1.45; color: var(--text); }
+.addhome__text b { color: var(--brass); font-weight: 500; }
+
+.addhome__close {
+  margin-left: auto;
+  width: 28px; height: 28px;
+  flex: none;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+.addhome__close:hover { color: var(--text); }

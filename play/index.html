@@ -98,6 +98,12 @@
   <button class="btn btn--quiet" id="mode" type="button" data-i18n="modeManual">Свои числа</button>
 </footer>
 
+<!-- Показывается только на айфоне, открытом в браузере: как получить иконку -->
+<div class="addhome" id="addhome" hidden>
+  <p class="addhome__text" id="addhome-text"></p>
+  <button class="addhome__close" id="addhome-close" type="button" aria-label="×">×</button>
+</div>
+
 <script src="questions.js"></script>
 <script src="app.js"></script>
 <script>if ("serviceWorker" in navigator) { window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); }); }</script>

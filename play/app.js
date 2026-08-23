@@ -28,7 +28,8 @@
       modeManual: 'Свои числа',
       modeDice: 'Кубики',
       badNums: 'Категория 1–10, вопрос 1–20',
-      resetAsk: 'Забыть все открытые вопросы и начать заново?'
+      resetAsk: 'Забыть все открытые вопросы и начать заново?',
+      addHome: 'Чтобы играть без интернета: <b>Поделиться</b> → <b>«На экран „Домой“»</b>'
     },
     en: {
       title: 'The Life Story Game',
@@ -48,7 +49,8 @@
       modeManual: 'Own numbers',
       modeDice: 'Dice',
       badNums: 'Category 1–10, question 1–20',
-      resetAsk: 'Forget every opened question and start over?'
+      resetAsk: 'Forget every opened question and start over?',
+      addHome: 'To play offline: <b>Share</b> → <b>Add to Home Screen</b>'
     },
     es: {
       title: 'Historias de tu vida',
@@ -68,7 +70,8 @@
       modeManual: 'Sus números',
       modeDice: 'Dados',
       badNums: 'Categoría 1–10, pregunta 1–20',
-      resetAsk: '¿Olvidar todas las preguntas abiertas y empezar de nuevo?'
+      resetAsk: '¿Olvidar todas las preguntas abiertas y empezar de nuevo?',
+      addHome: 'Para jugar sin internet: <b>Compartir</b> → <b>Añadir a inicio</b>'
     },
     pt: {
       title: 'Histórias da sua vida',
@@ -88,7 +91,8 @@
       modeManual: 'Números de vocês',
       modeDice: 'Dados',
       badNums: 'Categoria 1–10, pergunta 1–20',
-      resetAsk: 'Esquecer todas as perguntas abertas e começar de novo?'
+      resetAsk: 'Esquecer todas as perguntas abertas e começar de novo?',
+      addHome: 'Para jogar sem internet: <b>Compartilhar</b> → <b>Adicionar à Tela de Início</b>'
     }
   };
 
@@ -338,6 +342,30 @@
     inCat.value = ''; inQ.value = '';
   });
 
+  // ---------- Подсказка про иконку на айфоне ----------
+  // Показываем только в браузере: в запущенном с рабочего стола приложении она не нужна
+  var addhome = $('addhome');
+
+  function maybeShowAddHome() {
+    var ua = navigator.userAgent || '';
+    var isIOS = /iPad|iPhone|iPod/.test(ua) ||
+                (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    var standalone = navigator.standalone === true ||
+                     (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches);
+    var hidden = false;
+    try { hidden = localStorage.getItem('lsg-addhome') === 'off'; } catch (e) {}
+    if (!isIOS || standalone || hidden) return;
+    $('addhome-text').innerHTML = t('addHome');
+    addhome.hidden = false;
+    document.body.classList.add('addhome-on');
+  }
+
+  $('addhome-close').addEventListener('click', function () {
+    addhome.hidden = true;
+    document.body.classList.remove('addhome-on');
+    try { localStorage.setItem('lsg-addhome', 'off'); } catch (e) {}
+  });
+
   // ---------- Старт ----------
   load();
   setMode('dice');
@@ -345,4 +373,5 @@
   updateCount();
   numCat.textContent = CATS;
   numQ.textContent = QS;
+  maybeShowAddHome();
 })();
